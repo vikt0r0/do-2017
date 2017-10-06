@@ -77,9 +77,35 @@ since there is exactly one edge entering and leaving and each vertex. To see tha
 \paragraph{Any solution satisfying constraints is feasible:}
 
 \subsection*{1.2}
+
+We may first note that 
+$$
+\sum_{i=0}^n\binom{n}{i} = 2^n
+$$
+Since $2^n$ is the total number of subsets of a set of size $n$. Since we are only looking at subsets of size between 2 and $n-2$, the number of subsets must be 
+\begin{align*}
+&2^n - \binom{n}{0} - \binom{n}{1} - \binom{n}{n-1} - \binom{n}{n} \\
+&=2^n - 1 - n - n - 1 \\&= 2^n - 2n - 2 
+\end{align*}
+since there are as many constraints as subsets, this is also the number of constraints.
 \subsection*{1.3}
+The number of constraints is equivalent to the number of combinations of $i \in V, j \in V \backslash\{1\}$. As $|V| = n$, there must therefore be $n(n-1)$ constraints.
 \subsection*{1.4}
+
+
+
 \subsection*{1.5}
+
+Since $v_1$ is in a cycle, it will have two incident edges that are part of the cycle it is in. Let the additional edge $e_\text{add}$ be the second lowest cost edge adjacent to $v_1$, and add it to the tree to create a cycle. If we do not include $e_\text{add}$, we have a subset of edges of $G$ that form a tree. The optimal of such a tree is equivalent to a minimum spanning tree, which we will call $\mathcal{M}$.\\
+Now, consider a Hamiltonian tour $\mathcal{H}$. From $\mathcal{H}$, we remove the most costly of the two edges incident to $v_1$, which we call $e_{\max}$. Removing this edge, we now have a tree, and therefore we can safely say that
+$$
+\text{cost}(\mathcal{H} ) - \text{cost}(e_{\max}) \geq \text{cost}(\mathcal{M})
+$$
+Since $\mathcal{M}$ is the tree with lowest possible cost. By definition, we must have that $e_{\max} \geq e_\text{add}$ since $e_\text{add}$ was the second lowest cost of all edges and $e_{\max}$ was chosen to be the most costly among two edges. Therefore
+$$
+\text{cost}(\mathcal{M}) + \text{cost}(e_\text{add}) \leq \text{cost}(\mathcal{M}) + \text{cost}(e_\text{max}) \leq \text{cost}(\mathcal{H})
+$$
+
 
 \section*{Implementation part - branch-and-bound}
 \subsection*{2.1}
