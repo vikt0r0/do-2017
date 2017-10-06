@@ -1,6 +1,7 @@
 package edu.aa12;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -9,6 +10,8 @@ public abstract class Graph {
 	public final double[][] vertexCoords;
 	/** An array of lists. The i'th entry indicates the edges adjacent to vertex i */
 	public final List<Edge> edges;
+	/** **/
+	public final HashSet<Edge> edgeSet;
 	/** An array of lists. The i'th entry indicates the edges adjacent to vertex i */
 	public final List<Edge>[] incidentEdges;
 	protected final double[][] distances;
@@ -18,6 +21,7 @@ public abstract class Graph {
 		this.vertexCoords = coords;
 		int n = vertexCoords.length;
 		this.edges = new ArrayList<Edge>();
+		this.edgeSet = new HashSet<Edge>();
 		this.incidentEdges = new List[n];
 		for(int i=0;i<n;i++) incidentEdges[i]=new LinkedList<Edge>();
 		this.distances = new double[n][n];
@@ -40,6 +44,7 @@ public abstract class Graph {
 		distances[i][j] = distances[j][i] = Math.sqrt( dx*dx+dy*dy );
 		Edge e = new Edge(i,j);
 		edges.add(e);
+		edgeSet.add(e);
 		incidentEdges[i].add(e);
 		incidentEdges[j].add(e);
 		

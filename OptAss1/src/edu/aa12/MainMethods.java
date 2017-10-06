@@ -5,7 +5,7 @@ public class MainMethods {
 	public static void main(String[] args){
 		solveGraph(new Instance1());
 		solveGraph(new Instance2());
-		solveGraph(new Instance3());
+		//solveGraph(new Instance3());
 	}
 	
 	public static void solveGraph(Graph g){

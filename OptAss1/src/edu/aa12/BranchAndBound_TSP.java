@@ -1,8 +1,11 @@
 package edu.aa12;
 
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.PriorityQueue;
+import java.util.Set;
 
 import edu.aa12.DisjointSet.DSNode;
 
@@ -33,8 +36,9 @@ public class BranchAndBound_TSP {
 		PriorityQueue<BnBNode> nodePool = new PriorityQueue<BnBNode>(10000,	new Comparator<BnBNode>(){
 			public int compare(BnBNode n0, BnBNode n1) {
 				return Double.compare(n0.lowerBound, n1.lowerBound);//Best-first
-				//return (n0.depth-n1.depth);//Breadth-first
-				//return (n1.depth-n0.depth);//Depth-first
+				// return (int) Math.signum(Math.random() - 0.5);
+				// return (n0.depth-n1.depth);//Breadth-first
+				// return (n1.depth-n0.depth);//Depth-first
 			}});
 		
 		BnBNode root = new BnBNode(null,null, false);
@@ -45,11 +49,19 @@ public class BranchAndBound_TSP {
 		
 		while(!nodePool.isEmpty()){
 			BnBNode node = nodePool.poll();
+			// If the number of fixed edges is equal to the number of vertices
+			// in G, we have a Hamiltonian cycle and we stop recursing.
 			if(node.edgesDefined==(graph.getVertices())){
-				if(node.lowerBound<best.lowerBound) best = node;
+				if(node.lowerBound<best.lowerBound) {
+					best = node;
+					// System.out.println("Updated best, yay! Best: " + best.lowerBound);
+				}
 			}else{
+				// System.out.println("Lower bound: " + node.lowerBound + ", best: " + best.lowerBound);
 				if(node.lowerBound<=best.lowerBound){
 					branch(node,nodePool);
+				} else {
+					// Prune
 				}
 			}
 		}
@@ -90,6 +102,10 @@ public class BranchAndBound_TSP {
 		int uAdj = 0, vAdj = 0;
 		//Find length of defined edges
 		n = node;
+		// Iterate up the BnB tree and see which edges were included/excluded
+		// respectively. The total number of incident edges minus the total number
+		// of excluded edges plus the total number of included edges for u, v,
+		// respectively.
 		while(n.parent!=null){
 			if(n.edgeIncluded){
 				if(n.edge.u==nextEdge.u||n.edge.v==nextEdge.u) uAdj++;
@@ -125,11 +141,36 @@ public class BranchAndBound_TSP {
 			return objectiveValue(node);
 		}
 
+		// Compute the MST
 		List<Edge> MST = kruskal.minimumSpanningTree(graph, node);
+		MST.addAll(node.getIncludedEdges());
 		
+		// The edges we can not add to the lower bound
+		Set<Edge> illegalEdges = new HashSet<Edge>();
+		illegalEdges.addAll(MST);
+		illegalEdges.addAll(node.getExcludedEdges());
 		
+		@SuppressWarnings("unchecked")
+		Set<Edge> legalEdges = (HashSet<Edge>) graph.edgeSet.clone(); 
+		legalEdges.removeAll(illegalEdges);
 		
-		return 0;
+		// Get the min cost edge
+		Edge min = Collections.min(legalEdges, new Comparator<Edge>() {
+			public int compare(Edge e1, Edge e2) {
+				return Double.compare(graph.distances[e1.u][e1.v], graph.distances[e2.u][e2.v]);
+			}
+		});
+		
+		MST.add(min);
+		
+		double dist = 0.0;
+		
+		// Compute value of tree
+		for (Edge e : MST) {
+			dist += graph.getLength(e);
+		}
+		
+		return dist;
 	}
 	
 	/** Assuming that n represents a valid hamiltonian tour return the length of the tour */

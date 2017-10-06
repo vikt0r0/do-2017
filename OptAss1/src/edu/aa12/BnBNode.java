@@ -1,5 +1,9 @@
 package edu.aa12;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 /** 
  * A node in the branch-and-bound tree.  
  */
@@ -22,6 +26,28 @@ public class BnBNode{
 		
 		this.edge = edge;
 		this.edgeIncluded = edgeIncluded;
+	}
+	
+	public Set<Edge> getExcludedEdges() {
+		Set<Edge> excluded = new HashSet<Edge>();
+		BnBNode n = this;
+		while(n.parent!=null){
+			if (!n.edgeIncluded)
+				excluded.add(n.edge);
+			n=n.parent;
+		}
+		return excluded;
+	}
+	
+	public Set<Edge> getIncludedEdges() {
+		Set<Edge> included = new HashSet<Edge>();
+		BnBNode n = this;
+		while(n.parent!=null){
+			if (n.edgeIncluded)
+				included.add(n.edge);
+			n=n.parent;
+		}
+		return included;
 	}
 
 	/** Return a string-representation of a node. Convenient for debugging. */
