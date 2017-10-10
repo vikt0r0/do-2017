@@ -72,9 +72,22 @@
 &\sum_{i \in V, i \neq j} x_{ij} = \sum_{i \in V, i \neq j} \mathbbm{1}_{E_p}((i,j)) = 1 \; \; \; \forall j \in V \\
 \mathrm{and} \; \; \;  &\sum_{j \in V, j \neq i} x_{ij} = \sum_{j \in V, j \neq i} \mathbbm{1}_{E_p}((i,j)) = 1 \; \; \; \forall i \in V
 \end{align*}
-since there is exactly one edge entering and leaving and each vertex. To see that $p$ satisfies the subtour constraint, consider any subset $S \subset V$ s.t. $2 \leq |S| \leq n-2$. In the worst case, 
+since there is exactly one edge entering and leaving and each vertex. To see that $p$ satisfies the subtour constraint, consider any subset $S \subset V$ s.t. $2 \leq |S| \leq n-2$. Then for each such subset $S$,
+\begin{align*}
+\sum_{i,j \in S} x_{ij} = \sum_{i,j \in S} \mathbbm{1}_{E_p}((i,j)) \leq \sum_{i \in S} \left[ \mathbbm{1}_{E_p}((\pi(i),\pi(i+1))) \right] - 1 = \sum_{i \in S} \left( 1 \right) - 1 = |S| - 1
+\end{align*}
+This first inequality follows since in the worst case, $S$ forms a Hamiltonian path (i.e. subgraph of the Hamiltonian tour), and this has one edge less than the number of vertices.
 
 \paragraph{Any solution satisfying constraints is feasible:}
+To show the other direction, we need to show that an assignment satisfying the constraints correspond to a Hamiltonian tour of G, i.e. that
+\begin{enumerate}
+\item All vertices are visited exactly once (except for the first vertex)
+\item There is only one cycle.
+\end{enumerate}
+Suppose $\mathbf{x} \in \left\{0,1\right\}^{n \times n}$ is an assignment satisfying the contraints. To show 1), we note that $x_{ij}=1$ iff. there is an edge going from vertex $v_{i}$ to $v_{j}$. For each vertex $v_{k}$ to be visited exactly once, we require that $\sum_{i \in V} x_{ik} = \sum_{j \in V} x_{kj} = 1$, $\forall k \in 1 \hdots n$ which is satisfied by assumption.
+
+To show 2), assume for the sake of contradiction that the feasible solution consists of $k>1$ subtours $p_{1}, \hdots , p_{k}$. The sets of vertices in each such subtour, $p_{i}$, denoted by $L(p_{i})$, form a partition of $V$, so $2 \leq \left| L(p_{i}) \right| \leq n-2$, $1 \leq i \leq k$. Since any subtour $p_{i}$ is a cycle, it has exactly $|L(p_i)|$ edges, and hence $\sum_{i,j \in L(p_{i})} x_{ij} = |L(p_{i})|$ which contradicts the subtour constraint. Hence there can only one cycle.
+
 
 \subsection*{1.2}
 
@@ -85,27 +98,26 @@ $$
 Since $2^n$ is the total number of subsets of a set of size $n$. Since we are only looking at subsets of size between 2 and $n-2$, the number of subsets must be 
 \begin{align*}
 &2^n - \binom{n}{0} - \binom{n}{1} - \binom{n}{n-1} - \binom{n}{n} \\
-&=2^n - 1 - n - n - 1 \\&= 2^n - 2n - 2 
+&=2^n - 1 - n - n - 1 \\
+&= 2^n - 2n - 2 
 \end{align*}
 since there are as many constraints as subsets, this is also the number of constraints.
 \subsection*{1.3}
-The number of constraints is equivalent to the number of combinations of $i \in V, j \in V \backslash\{1\}$. As $|V| = n$, there must therefore be $n(n-1)$ constraints.
+The number of constraints is equal to the number of combinations of $i \in V, j \in V \backslash\{1\}$. As $|V| = n$, there are $\left|V \times V \setminus \left\{1\right\} \right| = n(n-1)$ constraints.
+
 \subsection*{1.4}
 
 
-
-\subsection*{1.5}
-
-Since $v_1$ is in a cycle, it will have two incident edges that are part of the cycle it is in. Let the additional edge $e_\text{add}$ be the second lowest cost edge adjacent to $v_1$, and add it to the tree to create a cycle. If we do not include $e_\text{add}$, we have a subset of edges of $G$ that form a tree. The optimal of such a tree is equivalent to a minimum spanning tree, which we will call $\mathcal{M}$.\\
-Now, consider a Hamiltonian tour $\mathcal{H}$. From $\mathcal{H}$, we remove the most costly of the two edges incident to $v_1$, which we call $e_{\max}$. Removing this edge, we now have a tree, and therefore we can safely say that
+\subsection*{1.5} 
+Consider a minimum-cost Hamiltonian tour $\mathcal{H}$, a minimum spanning tree $\mathcal{M}$ in $G$ and a leaf-node $v_1$ in $\mathcal{M}$. Since $v_1$ is on $\mathcal{H}$, it has exactly two incident edges $e_\text{min}$ and $e_{\text{max}}$. From $\mathcal{H}$, we remove the most costly of the two edges incident to $v_1$, denoted by $e_{\max}$. Removing this edge, we now have a tree, and therefore
 $$
-\text{cost}(\mathcal{H} ) - \text{cost}(e_{\max}) \geq \text{cost}(\mathcal{M})
+\text{cost}(\mathcal{M}) \leq \text{cost}(\mathcal{H}) - \text{cost}(e_{\max})
 $$
-Since $\mathcal{M}$ is the tree with lowest possible cost. By definition, we must have that $e_{\max} \geq e_\text{add}$ since $e_\text{add}$ was the second lowest cost of all edges and $e_{\max}$ was chosen to be the most costly among two edges. Therefore
+since $\mathcal{M}$ is the tree with lowest possible cost. By definition, we must have that $e_{\max} \geq e_\text{min}$ since $e_\text{max}$ was the costlier among the two edges. Therefore
 $$
-\text{cost}(\mathcal{M}) + \text{cost}(e_\text{add}) \leq \text{cost}(\mathcal{M}) + \text{cost}(e_\text{max}) \leq \text{cost}(\mathcal{H})
+\text{cost}(\mathcal{M}) + \text{cost}(e_\text{min}) \leq \text{cost}(\mathcal{M}) + \text{cost}(e_\text{max}) \leq \text{cost}(\mathcal{H})
 $$
-
+and hence the MST with the addition of cheapest edge to a leaf is a lower bound for $\text{cost}(\mathcal{H})$
 
 \section*{Implementation part - branch-and-bound}
 \subsection*{2.1}

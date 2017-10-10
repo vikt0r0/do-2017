@@ -127,7 +127,6 @@ public class BranchAndBound_TSP {
 		//Exclude nextEdge (assuming constraints can be met)
 		if(uAdjMax>2 && vAdjMax>2){
 			n = new BnBNode(node, nextEdge, false);
-			n.upperBound = upperBound(n);
 			n.lowerBound = lowerBound(n);
 			nodePool.add(n);
 			nodesGenerated++;
@@ -137,7 +136,6 @@ public class BranchAndBound_TSP {
 		if( (node.edgesDefined==graph.getVertices()-1||ds.find(vertexSets[nextEdge.u])!=ds.find(vertexSets[nextEdge.v])) && uAdj<2 && vAdj<2){
 			n = new BnBNode(node,nextEdge,true);
 			n.lowerBound = lowerBound(n);
-			n.upperBound = upperBound(n);
 			nodePool.add(n);
 			nodesGenerated++;
 		}
