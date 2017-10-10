@@ -6,7 +6,7 @@ public class MainMethods {
 		//System.out.println(TwoApproximationTSP.computeBound(new Instance1(), root));
 		solveGraph(new Instance1());
 		solveGraph(new Instance2());
-		//solveGraph(new Instance3());
+		solveGraph(new Instance3());
 	}
 	
 	public static void solveGraph(Graph g){

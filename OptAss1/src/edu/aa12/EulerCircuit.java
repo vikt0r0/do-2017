@@ -62,7 +62,6 @@ public class EulerCircuit {
 		Edge current = succ.keySet().stream().collect(Collectors.toList()).get(0);
 
 		for (int i = 0; i<succ.size(); ++i)  {
-			System.out.println(current);
 			for (Edge e : succ.keySet()) {
 				if (current.u == e.u && current.v == e.v) {
 					current = succ.get(e);

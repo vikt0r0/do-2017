@@ -16,7 +16,6 @@ import edu.aa12.DisjointSet.DSNode;
 public class BranchAndBound_TSP {
 	/** Finds the minimum spanning tree using Kruskals algorithm */
 	private final Kruskal kruskal = new Kruskal();
-	private final NearestNeighbor nn = new NearestNeighbor();
 	private final Graph graph;
 	/** The number of BnBNodes generated */
 	private long nodesGenerated = 0;
@@ -45,19 +44,13 @@ public class BranchAndBound_TSP {
 		
 		BnBNode root = new BnBNode(null,null, false);
 		root.lowerBound = Double.POSITIVE_INFINITY;
-		double upperBoundIncumbent = Double.POSITIVE_INFINITY;
+		double upperBoundIncumbent = upperBound(root);
 		nodePool.add(root);
 		
 		BnBNode best = root;
 		
 		while(!nodePool.isEmpty()){
 			BnBNode node = nodePool.poll();
-
-			if(node.upperBound <= upperBoundIncumbent && node.upperBound != 0.0)
-			{
-				System.out.println(node.upperBound + ", " + node.lowerBound);
-				upperBoundIncumbent = node.upperBound;
-			}
 			
 			// If the number of fixed edges is equal to the number of vertices
 			// in G, we have a Hamiltonian cycle and we stop recursing.
@@ -67,12 +60,10 @@ public class BranchAndBound_TSP {
 					// System.out.println("Updated best, yay! Best: " + best.lowerBound);
 				}
 			}else{
-				if(node.lowerBound > upperBoundIncumbent)
-				{
-					System.out.println("Prune by bound at feasible solution = " + best.lowerBound + ", " + node.lowerBound + " > " + upperBoundIncumbent);
-				}
-				else
-				{
+				// System.out.println(node.lowerBound);
+				if(node.lowerBound > upperBoundIncumbent && node.parent != null) {
+					// System.out.println("Prune by bound at feasible solution = " + best.lowerBound + ", " + node.lowerBound + " > " + upperBoundIncumbent);
+				} else {
 					if(node.lowerBound<=best.lowerBound){
 						branch(node,nodePool);
 					} else {
@@ -192,6 +183,7 @@ public class BranchAndBound_TSP {
 	}
 	
 	public double upperBound(BnBNode node){
+		/*
 		if(node.edgesDefined==graph.getVertices()) {
 			return objectiveValue(node);
 		}
@@ -223,6 +215,8 @@ public class BranchAndBound_TSP {
 		}
 		
 		return dist;
+		*/
+		return TwoApproximationTSP.computeBound(graph, node);
 	}
 	
 	/** Assuming that n represents a valid hamiltonian tour return the length of the tour */
