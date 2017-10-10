@@ -44,13 +44,18 @@ public class BranchAndBound_TSP {
 		
 		BnBNode root = new BnBNode(null,null, false);
 		root.lowerBound = Double.POSITIVE_INFINITY;
-		double upperBoundIncumbent = upperBound(root);
+		double upperBoundIncumbent = TwoApproximationTSP.computeBound(graph, root);
 		nodePool.add(root);
-		
+		System.out.printf("Initial upper bound = %.3f", upperBoundIncumbent);
 		BnBNode best = root;
 		
 		while(!nodePool.isEmpty()){
 			BnBNode node = nodePool.poll();
+
+			if(node.upperBound <= upperBoundIncumbent && node.upperBound != 0.0)
+			{
+				upperBoundIncumbent = node.upperBound;
+			}
 			
 			// If the number of fixed edges is equal to the number of vertices
 			// in G, we have a Hamiltonian cycle and we stop recursing.
@@ -60,15 +65,16 @@ public class BranchAndBound_TSP {
 					// System.out.println("Updated best, yay! Best: " + best.lowerBound);
 				}
 			}else{
-				// System.out.println(node.lowerBound);
-				if(node.lowerBound > upperBoundIncumbent && node.parent != null) {
-					// System.out.println("Prune by bound at feasible solution = " + best.lowerBound + ", " + node.lowerBound + " > " + upperBoundIncumbent);
+				if(node.lowerBound > upperBoundIncumbent && node.parent != null)
+				{
+				}
+				else
+				{
+				if(node.lowerBound<=best.lowerBound){
+					branch(node,nodePool);
 				} else {
-					if(node.lowerBound<=best.lowerBound){
-						branch(node,nodePool);
-					} else {
-						// Prune
-					}
+					// Prune
+				}
 				}
 			}
 		}
@@ -183,11 +189,12 @@ public class BranchAndBound_TSP {
 	}
 	
 	public double upperBound(BnBNode node){
-		/*
+		
 		if(node.edgesDefined==graph.getVertices()) {
 			return objectiveValue(node);
 		}
-
+		
+		
 		List<Edge> MaxST = kruskal.maximumSpanningTree(graph, node);
 		MaxST.addAll(node.getIncludedEdges());
 		
@@ -215,8 +222,7 @@ public class BranchAndBound_TSP {
 		}
 		
 		return dist;
-		*/
-		return TwoApproximationTSP.computeBound(graph, node);
+		
 	}
 	
 	/** Assuming that n represents a valid hamiltonian tour return the length of the tour */

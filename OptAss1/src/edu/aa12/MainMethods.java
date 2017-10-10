@@ -3,7 +3,7 @@ package edu.aa12;
 public class MainMethods {
 
 	public static void main(String[] args){
-		//System.out.println(TwoApproximationTSP.computeBound(new Instance1(), root));
+		//System.out.println(simpUpperBound.upperBound(new Instance1(), new BnBNode(null, null, false)));
 		solveGraph(new Instance1());
 		solveGraph(new Instance2());
 		solveGraph(new Instance3());
