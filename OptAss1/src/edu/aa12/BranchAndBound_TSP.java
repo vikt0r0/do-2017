@@ -69,8 +69,7 @@ public class BranchAndBound_TSP {
 			}else{
 				if(node.lowerBound > upperBoundIncumbent)
 				{
-					System.out.println("Prune at " + best.lowerBound);
-					throw new Error();
+					System.out.println("Prune by bound at feasible solution = " + best.lowerBound + ", " + node.lowerBound + " > " + upperBoundIncumbent);
 				}
 				else
 				{
@@ -209,7 +208,6 @@ public class BranchAndBound_TSP {
 		Set<Edge> legalEdges = (HashSet<Edge>) graph.edgeSet.clone(); 
 		legalEdges.removeAll(illegalEdges);
 		
-		// Get the min cost edge
 		Edge max = Collections.max(legalEdges, new Comparator<Edge>() {
 			public int compare(Edge e1, Edge e2) {
 				return Double.compare(graph.distances[e1.u][e1.v], graph.distances[e2.u][e2.v]);
