@@ -5,11 +5,14 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.IntStream;
+
+import com.sun.jmx.remote.util.EnvHelp;
 
 import edu.aa12.DisjointSet.DSNode;
 
 /** Class for finding the minimum spanning tree using Kruskals algorithm */
-public class Kruskal {
+public class NearestNeighbor {
 	private final DSNode[] nodes = new DSNode[200];//Hack
 	private final DisjointSet ds = new DisjointSet();
 	
@@ -18,66 +21,29 @@ public class Kruskal {
 	 * Find the minimum spanning tree in a graph where included edges in <code>node</code> are 
 	 * contracted and excluded edges in <code>node</code> are disregarded. 
 	 */
-	public List<Edge> minimumSpanningTree(final Graph graph, BnBNode node){
+	public List<Edge> nearestNeighbor(final Graph graph, BnBNode node){
 		for(Edge e: graph.edges){
 			nodes[e.u] = ds.makeSet(e.u);
 			nodes[e.v] = ds.makeSet(e.v); 
 		}
 		
-		List<Edge> mstEdges = new LinkedList<Edge>(graph.edges);
+		List<Edge> nnEdges = new LinkedList<Edge>(graph.edges);
 		BnBNode n = node;
 		while(n.parent!=null){
 			if(n.edgeIncluded) 	ds.union(nodes[n.edge.u], nodes[n.edge.v]);		//Contract included edges
-			else				mstEdges.remove(n.edge);						//Disregard excluded edges
+			else				nnEdges.remove(n.edge);						//Disregard excluded edges
 			n=n.parent;
 		}
 		
-		List<Edge> tmp = new ArrayList<Edge>(mstEdges);
+		List<Edge> tmp = new ArrayList<Edge>(nnEdges);
 		Collections.sort(tmp, new Comparator<Edge>(){	//Sort edges in nondescending order
 			public int compare(Edge o1, Edge o2) {
-				return Double.compare(graph.getDistance(o1.u, o1.v), graph.getDistance(o2.u, o2.v));
+				return Double.compare(o1.u*1000 + graph.getLength(o1), o2.u*1000 + graph.getLength(o2));
 			}});
 		
-		for(Edge e: tmp){ //Main loop of Kruskal
-			if(ds.find(nodes[e.u])!=ds.find(nodes[e.v])){
-				ds.union(nodes[e.u], nodes[e.v]);
-			}else{
-				mstEdges.remove(e); 
-			}
-		}
 		
-		return mstEdges;
-	}
-	
-	public List<Edge> maximumSpanningTree(final Graph graph, BnBNode node){
-		for(Edge e: graph.edges){
-			nodes[e.u] = ds.makeSet(e.u);
-			nodes[e.v] = ds.makeSet(e.v); 
-		}
 		
-		List<Edge> mstEdges = new LinkedList<Edge>(graph.edges);
-		BnBNode n = node;
-		while(n.parent!=null){
-			if(n.edgeIncluded) 	ds.union(nodes[n.edge.u], nodes[n.edge.v]);		//Contract included edges
-			else				mstEdges.remove(n.edge);						//Disregard excluded edges
-			n=n.parent;
-		}
-		
-		List<Edge> tmp = new ArrayList<Edge>(mstEdges);
-		Collections.sort(tmp, new Comparator<Edge>(){	//Sort edges in nondescending order
-			public int compare(Edge o1, Edge o2) {
-				return Double.compare(graph.getDistance(o2.u, o2.v), graph.getDistance(o1.u, o1.v));
-			}});
-		
-		for(Edge e: tmp){ //Main loop of Kruskal
-			if(ds.find(nodes[e.u])!=ds.find(nodes[e.v])){
-				ds.union(nodes[e.u], nodes[e.v]);
-			}else{
-				mstEdges.remove(e); 
-			}
-		}
-		
-		return mstEdges;
+		return nnEdges;
 	}
 	
 	
