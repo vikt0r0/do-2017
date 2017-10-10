@@ -26,15 +26,20 @@ public class CplexTspSolver
 		
 		try {
 			cplex = new IloCplex();
-			
-			// Objective function is the distance of the edges which are taken.
-			IloLinearNumExpr objective = cplex.linearNumExpr();
 
 			for(int i = 0; i < V; ++i) {
 				for(int j = 0; j < V; ++j) {
 					// Initialize edge variable
 					this.edges[i][j] = cplex.boolVar();
-					
+				}
+			}
+			
+
+			// Objective function is the distance of the edges which are taken.
+			IloLinearNumExpr objective = cplex.linearNumExpr();
+
+			for(int i = 0; i < V; ++i) {
+				for(int j = 0; j < V; ++j) {
 					// Add to objective function
 					double distance = g.getDistance(i,j);
 					objective.addTerm(distance, this.edges[i][j]);
@@ -51,7 +56,7 @@ public class CplexTspSolver
 						continue;
 					
 					// Initialize edge variable
-					sum.addTerm(edges[i][j], 1);
+					sum.addTerm(1, edges[i][j]);
 				}
 				cplex.addEq(sum, 1);
 			}
@@ -60,11 +65,11 @@ public class CplexTspSolver
 			for(int j = 0; j < V; ++j) {
 				IloLinearIntExpr sum = cplex.linearIntExpr();
 				for(int i = 0; i < V; ++i) {
-					if (i == j)
+					if (j == i)
 						continue;
 					
 					// Initialize edge variable
-					sum.addTerm(edges[i][j], 1);
+					sum.addTerm(1, edges[i][j]);
 				}
 				cplex.addEq(sum, 1);
 			}
@@ -75,7 +80,21 @@ public class CplexTspSolver
 
 			for(int i = 0; i < V; ++i) {
 				for(int j = 1; j < V; ++j) {
-					IloNumExpr rhs = cplex.sum(t[i], cplex.sum(1, cplex.negative(cplex.prod(V, cplex.sum(1, cplex.negative(edges[i][j])))))); // HACK
+					IloNumExpr rhs = cplex.sum(
+							t[i],
+							cplex.sum(
+									1,
+									cplex.negative(
+											cplex.prod(
+													V,
+													cplex.sum(
+															1,
+															cplex.negative(edges[i][j])
+															)
+													)
+											)
+									)
+							); // HACK
 					cplex.addGe(t[j], rhs);
 				}
 			}
@@ -91,6 +110,7 @@ public class CplexTspSolver
 		try {
 			// solve model and print solution 
 			if(cplex.solve()) {
+				/*
 				for(int i = 0; i < V; ++i){
 					for(int j = 0; j < V; ++j){
 						if (cplex.getValue(edges[i][j]) == 1.0) {
@@ -98,6 +118,7 @@ public class CplexTspSolver
 						}
 					}
 				}
+				*/
 				System.out.println("obj = "+ cplex.getObjValue());
 			}
 			else {
