@@ -6,7 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /** A representation of an undirected graph. Vertices are implicitly represented as numbers from 0 to (getVertices()-1). */
-public abstract class Graph {
+public class Graph {
 	public final double[][] vertexCoords;
 	/** An array of lists. The i'th entry indicates the edges adjacent to vertex i */
 	public final List<Edge> edges;
