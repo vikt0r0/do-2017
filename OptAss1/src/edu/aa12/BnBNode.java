@@ -8,7 +8,8 @@ import java.util.Set;
  * A node in the branch-and-bound tree.  
  */
 public class BnBNode{
-	public double lowerBound; 
+	public double lowerBound;
+	public double upperBound;
 	public final BnBNode parent;
 	/** The depth in the bnb-tree*/
 	public final int depth;

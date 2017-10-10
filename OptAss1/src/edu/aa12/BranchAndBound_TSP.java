@@ -1,5 +1,6 @@
 package edu.aa12;
 
+import java.awt.print.Printable;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -15,6 +16,7 @@ import edu.aa12.DisjointSet.DSNode;
 public class BranchAndBound_TSP {
 	/** Finds the minimum spanning tree using Kruskals algorithm */
 	private final Kruskal kruskal = new Kruskal();
+	private final NearestNeighbor nn = new NearestNeighbor();
 	private final Graph graph;
 	/** The number of BnBNodes generated */
 	private long nodesGenerated = 0;
@@ -43,12 +45,20 @@ public class BranchAndBound_TSP {
 		
 		BnBNode root = new BnBNode(null,null, false);
 		root.lowerBound = Double.POSITIVE_INFINITY;
+		double upperBoundIncumbent = Double.POSITIVE_INFINITY;
 		nodePool.add(root);
 		
 		BnBNode best = root;
 		
 		while(!nodePool.isEmpty()){
 			BnBNode node = nodePool.poll();
+
+			if(node.upperBound <= upperBoundIncumbent && node.upperBound != 0.0)
+			{
+				System.out.println(node.upperBound + ", " + node.lowerBound);
+				upperBoundIncumbent = node.upperBound;
+			}
+			
 			// If the number of fixed edges is equal to the number of vertices
 			// in G, we have a Hamiltonian cycle and we stop recursing.
 			if(node.edgesDefined==(graph.getVertices())){
@@ -57,11 +67,17 @@ public class BranchAndBound_TSP {
 					// System.out.println("Updated best, yay! Best: " + best.lowerBound);
 				}
 			}else{
-				// System.out.println("Lower bound: " + node.lowerBound + ", best: " + best.lowerBound);
-				if(node.lowerBound<=best.lowerBound){
-					branch(node,nodePool);
-				} else {
-					// Prune
+				if(node.lowerBound > upperBoundIncumbent)
+				{
+					System.out.println("Prune by bound at feasible solution = " + best.lowerBound + ", " + node.lowerBound + " > " + upperBoundIncumbent);
+				}
+				else
+				{
+					if(node.lowerBound<=best.lowerBound){
+						branch(node,nodePool);
+					} else {
+						// Prune
+					}
 				}
 			}
 		}
@@ -120,6 +136,7 @@ public class BranchAndBound_TSP {
 		//Exclude nextEdge (assuming constraints can be met)
 		if(uAdjMax>2 && vAdjMax>2){
 			n = new BnBNode(node, nextEdge, false);
+			n.upperBound = upperBound(n);
 			n.lowerBound = lowerBound(n);
 			nodePool.add(n);
 			nodesGenerated++;
@@ -129,6 +146,7 @@ public class BranchAndBound_TSP {
 		if( (node.edgesDefined==graph.getVertices()-1||ds.find(vertexSets[nextEdge.u])!=ds.find(vertexSets[nextEdge.v])) && uAdj<2 && vAdj<2){
 			n = new BnBNode(node,nextEdge,true);
 			n.lowerBound = lowerBound(n);
+			n.upperBound = upperBound(n);
 			nodePool.add(n);
 			nodesGenerated++;
 		}
@@ -167,6 +185,40 @@ public class BranchAndBound_TSP {
 		
 		// Compute value of tree
 		for (Edge e : MST) {
+			dist += graph.getLength(e);
+		}
+		
+		return dist;
+	}
+	
+	public double upperBound(BnBNode node){
+		if(node.edgesDefined==graph.getVertices()) {
+			return objectiveValue(node);
+		}
+
+		List<Edge> MaxST = kruskal.maximumSpanningTree(graph, node);
+		MaxST.addAll(node.getIncludedEdges());
+		
+		// The edges we can not add to the lower bound
+		Set<Edge> illegalEdges = new HashSet<Edge>();
+		illegalEdges.addAll(MaxST);
+		illegalEdges.addAll(node.getExcludedEdges());
+		
+		@SuppressWarnings("unchecked")
+		Set<Edge> legalEdges = (HashSet<Edge>) graph.edgeSet.clone(); 
+		legalEdges.removeAll(illegalEdges);
+		
+		Edge max = Collections.max(legalEdges, new Comparator<Edge>() {
+			public int compare(Edge e1, Edge e2) {
+				return Double.compare(graph.distances[e1.u][e1.v], graph.distances[e2.u][e2.v]);
+			}
+		});
+		
+		MaxST.add(max);
+		
+		double dist = 0.0;
+		for(Edge e : MaxST)
+		{
 			dist += graph.getLength(e);
 		}
 		
