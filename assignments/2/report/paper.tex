@@ -1,0 +1,77 @@
+\documentclass[12pt]{article}
+
+% This first part of the file is called the PREAMBLE. It includes
+% customizations and command definitions. The preamble is everything
+% between \documentclass and \begin{document}.
+
+\usepackage[margin=1in]{geometry}  % set the margins to 1in on all sides
+\usepackage{graphicx}              % to include figures
+\usepackage{amsmath,bm}            % great math stuff
+\usepackage{amsfonts}              % for blackboard bold, etc
+\usepackage{amsthm}                % better theorem environments
+\usepackage{listings}
+\usepackage{bbm}
+\usepackage{hyperref}
+\usepackage{tikz}
+\usepackage[]{algorithm2e}
+\usepackage{parskip} 			   % no paragraph indentation
+
+\usetikzlibrary{arrows,automata}
+
+
+% various theorems, numbered by section
+
+\newtheorem{thm}{Theorem}[section]
+\newtheorem{lem}[thm]{Lemma}
+\newtheorem{prop}[thm]{Proposition}
+\newtheorem{cor}[thm]{Corollary}
+\newtheorem{conj}[thm]{Conjecture}
+
+\DeclareMathOperator{\id}{id}
+
+\newcommand{\bd}[1]{\mathbf{#1}}  % for bolding symbols
+\newcommand{\RR}{\mathbb{R}}      % for Real numbers
+\newcommand{\ZZ}{\mathbb{Z}}      % for Integers
+\newcommand{\col}[1]{\left[\begin{matrix} #1 \end{matrix} \right]}
+\newcommand{\comb}[2]{\binom{#1^2 + #2^2}{#1+#2}}
+
+\lstset{ % General setup for the package
+    language={[LaTeX]TeX},
+    basicstyle=\footnotesize\sffamily,
+    tabsize=4,
+    columns=fixed,
+    keepspaces,
+    commentstyle=\color{red},
+    keywordstyle=\color{blue},
+    xleftmargin=.1\textwidth,
+    xrightmargin=.1\textwidth
+}
+
+\begin{document}
+
+\nocite{*}
+
+
+\title{Discrete Optimization \\
+       Assignment 2}
+
+\author{Mehdi Nadif \& Viktor Hansen}
+
+\maketitle
+
+\begin{abstract}
+  This is the second weekly assignment for the Discrete Optimization course offered at The Department of Computer Science, Uni. Copenhagen.
+\end{abstract}
+
+\pagebreak
+
+\section*{Theoretical part}
+
+
+\pagebreak
+\section*{Implementation part}
+\subsection*{2.1 CPLEX}
+\subsection*{2.2 Rounding}
+\subsection*{2.3 Third Method}
+
+\end{document}

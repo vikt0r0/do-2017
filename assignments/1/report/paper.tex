@@ -109,24 +109,30 @@ The number of constraints is equal to the number of combinations of $i \in V, j 
 
 
 \subsection*{1.4}
-
-Even though there are many more constraints in the subtour formulation, the variables that have to be optimized are only the $x_{ij}$. As the compact formulation have the additional $t_i, \ i = 1,...,V$ variables to optimize on, branch and bound will be on more variables. Therefore, the depth of the branching tree will be deeper, and it might take more time to get to a feasible solution which could have been used as an incumbent to prune with.\\
+Even though there are many more constraints in the subtour formulation, the variables that have to be optimized are only the $x_{ij}$. As the compact formulation have the additional $t_i, \ i = 1,...,V$ variables to optimize on, branch and bound will be on more variables. Therefore, the depth of the branching tree will be deeper, and it might take more time to get to a feasible solution which could have been used as an incumbent to prune with.
 
 Similarly, one may note that bounding the compact formulation by an LP relaxation yields weak bounds as the $x_{ij}$ can have very low values without breaking constraints. This is observed in a slightly weaker formulation, where we first change the constraints so that
 \begin{align*}
 t_j & \geq t_i + 1 - n(1 - x_{ij}), \quad i\in V, j\in V\backslash \{1\}\\
-\Leftrightarrow 1 - \frac{t_j - t_i - 1}{n} & \geq x_{ij}
+\Leftrightarrow \; x_{ij}& \leq  1 - \frac{t_i - t_j + 1}{n}
 \end{align*}
 
 if we formulate every combination of $i\in V, j \in V\backslash {1}$ as the set $A$, we may create the weaker bound
 \begin{align*}
-\sum_{(i,j)\in A} 1 - \frac{t_j - t_i - 1}{n} & \geq \sum_{(i,j)\in A} x_{ij}\\
-\Leftrightarrow |A| - \sum_{(i,j)\in A} \frac{t_j - t_i - 1}{n} & \geq \sum_{(i,j)\in A} x_{ij}\\
-\Rightarrow 
+&\sum_{(i,j)\in A} 1 - \frac{t_i - t_j +1}{n} \geq \sum_{(i,j)\in A} x_{ij}\\
+\Leftrightarrow \; & |A| - \sum_{(i,j)\in A} \frac{t_i - t_j + 1}{n} \geq \sum_{(i,j)\in A} x_{ij}\\
+\Rightarrow  \; & |A| - \sum_{(i,j)\in A} \frac{1}{n} \geq |A| - \sum_{(i,j)\in A} \frac{t_i - t_j + 1}{n} \geq \sum_{(i,j)\in A} x_{ij}\\
 \end{align*}
+the last inequality follows since $t_i \leq t_j$ in the optimal case, in which  the bound on the compact formulation is
+$$
+|A|\left(1 - \sum_{(i,j)\in A} \frac{1}{n}\right) \geq \sum_{(i,j)\in A} x_{ij}
+$$
+
+which is a weaker bound than the subtour formulation and may therefore give weaker lower bounds in the branching. 
+
 
 \subsection*{1.5} 
-Consider a minimum-cost Hamiltonian tour $\mathcal{H}$, a minimum spanning tree $\mathcal{M}$ in $G$ and a leaf-node $v_1$ in $\mathcal{M}$. Since $v_1$ is on $\mathcal{H}$, it has exactly two incident edges $e_\text{min}$ and $e_{\text{max}}$. From $\mathcal{H}$, we remove the most costly of the two edges incident to $v_1$, denoted by $e_{\max}$. Removing this edge, we now have a tree, and therefore
+Consider a minimum-cost Hamiltonian tour $\mathcal{H}$, a minimum spanning tree $\mathcal{M}$ in $G$ and a (possible) leaf-node $v_1$ in $\mathcal{M}$. Since $v_1$ is on $\mathcal{H}$, it has exactly two incident edges $e_\text{min}$ and $e_{\text{max}}$. From $\mathcal{H}$, we remove the most costly of the two edges incident to $v_1$, denoted by $e_{\max}$. Removing this edge, we now have a tree, and therefore
 $$
 \text{cost}(\mathcal{M}) \leq \text{cost}(\mathcal{H}) - \text{cost}(e_{\max})
 $$
@@ -136,24 +142,33 @@ $$
 $$
 and hence the MST with the addition of cheapest edge to a leaf is a lower bound for $\text{cost}(\mathcal{H})$
 
+\pagebreak
 \section*{Implementation part - branch-and-bound}
 \subsection*{2.1}
 
 There are several upper bounds that can be implemented for this TSP problem, and the ones that we have attempted to implement for this problem were:
 \begin{enumerate}
-\item {\bf maximumSpanningTree}: First, construct a spanning tree of maximum cost using Kruskal, but chosing the maximum edge at each iteration. Then select the remaining most expensive edge to create a cycle. This should bound the optimal Hamiltonian cycle from above, from the proof in subsection 1.5.
-\item {\bf two selecter}: For each $v\in V$, select the two most expensive edges adjacent to it (assure that edges that are forced to be included in the branch is chosen, and excluded are ignored). Take the sum of all these edges and divide by two to get an upper bound. The division is necessary, since every edge is in two terms of the summation.
-\item {\bf Christofides algorithm}: a more complex algorithm, that 
-\item {\bf 2-approximation}: Creates a minimum spanning tree of the graph, and then computes the size of an euler tour on this minimum spanning tree. Slightly weaker than Christofides with a worst case of twice the optimal solution.
+\item {\bf Maximum spanning tree}: First, construct a spanning tree of maximum cost using Kruskal, but chosing the maximum edge at each iteration. Then select the remaining most expensive edge to create a cycle. This should bound the optimal Hamiltonian cycle from above, from the proof in subsection 1.5.
+\item {\bf 2-selector}: For each $v\in V$, select the two most expensive edges adjacent to it (assure that edges that are forced to be included in the branch is chosen, and excluded are ignored). Take the sum of all these edges and divide by two to get an upper bound. The division is necessary, since every edge is in two terms of the summation.
+\item {\bf Christofides algorithm} for determining an upper bound which is within 3/2 of the optimal solution. Christophide's algorithm does the following:
+\begin{enumerate}
+\item Compute an MST $T$ of $G$.
+\item Select vertices of uneven degree in $T=(E, V, c)$, and store in set $L$.
+\item Compute a perfect, minimum cost matching in $L$, denoted by $M$.
+\item Determine an Euler tour in $G'=(E \cup M, V, c)$, and shortcut the tour using the triangle inequality where applicable.
+\item Return the resulting Hamiltonian tour of G.
+\end{enumerate}
+\item {\bf MST-walk 2-approximation}: Creates a minimum spanning tree of the graph, and then computes an Euler circuit on this minimum spanning tree which is subsequently short-circuited using the triangle inequality. Weaker than Christofides with an upper bound which is within a factor of 2 of the optimal solution.
 \end{enumerate}
 
-As can be seen in Fig. \ref{upperbounds}, the results of each of these heuristics have greatly varying results. Clearly the 2-approximation has the strongest bound on the root node, but it proved quite complex to implement this algorithm so that it worked with the branching, as assuring that some edge would be included in the euclidean tour was quite difficult. Also, it seems to be a bound that only gets worse as you decrease the domain of the graph. This is not the case for the {\bf maximumSpanningTree} or the {\bf two selector} which both get better at each branching since they always chose worst case for a graph.\\
+As can be seen in Fig. \ref{upperbounds}, the results of each of these heuristics have greatly varying results. Clearly the 2-approximation has the strongest bound on the root node, but it proved quite complex to implement this algorithm so that it worked with the branching, as this required that some edge would be included in the euclidean tour was quite difficult. Also, it seems to be a bound that only gets worse as you decrease the domain of the graph. This is not the case for the {\bf Maximum spanning tree} or the {\bf 2-selector} which both get better at each branching since they always chose worst case for a graph.\\
 
 Unfortunately, none of these upper bounds improved the number of nodes visited from only pruning by lower bounds that are higher than the currently best feasible solution. 
-\begin{figure}
+\begin{figure}[!hbt]
+\center
 \begin{tabular}{|c|c|c|c|}
 \hline
-&maxSpan & 2-selecter & 2-approximation\\
+&M(ax)ST & 2-selector & 2-approximation\\
 \hline
 Instance 1 & 31.59 & 31.08 & 8.90 \\
 \hline
@@ -166,23 +181,28 @@ Instance 3 & 54.38 & 51.82 & 44.86\\
 \end{figure}
 
 \subsection*{2.2}
+Solutions using branch-and-bound as well as CPLEX were implemented. The CPLEX solution uses the compact MTZ ILP formulation and does not solve any of the instances within any reasonable time. The branch-and-bound implementation with the lower bound described in 1.5 solves all the instances.
 
 \subsection*{2.3}
-
-\begin{figure}
-\begin{tabular}{|c | c | c | c | c |}
+The number of branch and bound nodes and the running time for each instance as well as optimal solution values can be seen in Fig. \ref{times}. Despite of being much smaller, a large number of branch-and-bound nodes are generated for instance 1. This might be due to how bounds are computed, as the nodes comprise 2 clusters.
+\begin{figure}[!hbt]
+\center
+\begin{tabular}{|c | c | c | c | c | c |}
 \hline
-& \multicolumn{2}{|c|}{Branch and bound} & \multicolumn{2}{|c|}{CPLEX} \\
+& \multicolumn{3}{|c|}{Branch and bound} & \multicolumn{2}{|c|}{CPLEX} \\
 \hline 
-& Time & Nodes visited & Time & Nodes Visited\\
+& Time/ms & Nodes visited & Path len. & Time & Nodes Visited\\
 \hline
-Instance 1 & & & & \\
+Instance 1 & 289.54 & 15133 & 8.649 & \multicolumn{2}{|c|}{N/A} \\
 \hline
-Instance 2 & & & & \\
+Instance 2 & 60.72 & 1701 & 19.030 & \multicolumn{2}{|c|}{N/A} \\
 \hline
-Instance 3 & & & & \\
+Instance 3 & 586890.74 & 10126850 & 26.753 & \multicolumn{2}{|c|}{N/A} \\
 \hline 
 \end{tabular}
+\caption{Number of branch and bound nodes and the running time for each instance as well as optimal solution values.
+\label{times}}
 \end{figure}
+The CPLEX solution solved no instances within any reasonable time as no pruning takes place when solving the raw ILP. This serves as a testament to the importance of Heuristics, approximations and pruning/cutting techniques such as branch-and-bound.
 
 \end{document}
