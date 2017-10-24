@@ -10,39 +10,63 @@ import java.io.PrintStream;
 public class ass2op1 {
 
 	public static void main(String[] args) throws IloException, FileNotFoundException {
-		IloOplFactory.setDebugMode(false);
-		IloOplFactory oplF = new IloOplFactory();
-		IloOplErrorHandler errHandler = oplF.createOplErrorHandler(System.out);
-		IloOplModelSource modelSource = oplF.createOplModelSource("ModelSparse1relax.mod");
-		IloCplex cplex = oplF.createCplex();
-		IloOplSettings settings = oplF.createOplSettings(errHandler);
-		IloOplModelDefinition def=oplF.createOplModelDefinition(modelSource,settings);
-		IloOplModel opl=oplF.createOplModel(def,cplex);
+		
+		String file1 = "scpa3.dat";
+		String file2 = "scpc3.dat";
+		String file3 = "scpnrf1.dat";
+		String file4 = "scpnrg5.dat";
+		
+		double file1Obj =  objectiveValueOfFile("data/" + file1);
+		double file2Obj =  objectiveValueOfFile("data/" + file2);
+		double file3Obj =  objectiveValueOfFile("data/" + file3);
+		
+		
 
-		String inDataFile = "data/scpa3.dat";
-		runOnFile(opl, oplF, cplex, inDataFile);
-		
-		
-		IloNumMap x = opl.getElement("x").asNumMap();
-		System.out.println(x.get(0));
+		System.out.println("File " + file1 + " has objective value " + file1Obj);
+		System.out.println("File " + file2 + " has objective value " + file2Obj);
+		System.out.println("File " + file3 + " has objective value " + file3Obj);
 	}
 
-	public static void runOnFile(IloOplModel opl, IloOplFactory oplF, IloCplex cplex, String str) throws IloException
+	public static double runOnFile(IloOplModel opl, IloOplFactory oplF, IloCplex cplex, String str) throws IloException
 	{
 		IloOplDataSource dataSource=oplF.createOplDataSource(str);
 		opl.addDataSource(dataSource);
 
 		opl.generate();
-		opl.convertAllIntVars(); // converts integer bounds into LP compatible format
+		//opl.convertAllIntVars(); // converts integer bounds into LP compatible format
 		
 		
 		if (cplex.solve()){
-			System.out.println(cplex.getObjValue());
+			return cplex.getObjValue();
 		 }
 		else{
 			System.out.println("Solution could not be achieved, probably insufficient memory or some other weird problem.");
+			return 0.0;
 		}
 	}
-	
+
+	public static double objectiveValueOfFile(String filename) throws IloException
+	{
+		IloOplFactory.setDebugMode(false);
+		IloOplFactory oplF = new IloOplFactory();
+		IloOplErrorHandler errHandler = oplF.createOplErrorHandler(System.out);
+		IloOplModelSource modelSource = oplF.createOplModelSource("ModelSparse1.mod");
+		IloCplex cplex = oplF.createCplex();
+		IloOplSettings settings = oplF.createOplSettings(errHandler);
+		IloOplModelDefinition def=oplF.createOplModelDefinition(modelSource,settings);
+		IloOplModel opl=oplF.createOplModel(def,cplex);
+
+		String inDataFile = filename;
+		Double objVal = runOnFile(opl, oplF, cplex, inDataFile);
+		
+		cplex.end();
+		opl.end();
+		def.end();
+		settings.end();
+		modelSource.end();
+		errHandler.end();
+		oplF.end();
+		return objVal;
+	}
 	
 }
