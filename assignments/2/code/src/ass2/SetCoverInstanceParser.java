@@ -26,7 +26,8 @@ public class SetCoverInstanceParser {
 		Integer n = null;
 		Integer m = null;
 		ArrayList<Integer> c = new ArrayList<Integer>();
-		Map<Integer, Set<Integer>> covers = new HashMap<Integer, Set<Integer>>();
+		Map<Integer, Set<Integer>> coveringV = new HashMap<Integer, Set<Integer>>();
+		Map<Integer, Set<Integer>> coveredByS = new HashMap<Integer, Set<Integer>>();
 		
 	    try (Stream<String> stream = Files.lines(Paths.get(filePath))) {
 	        for (String line : (Iterable<String>) stream::iterator) {
@@ -40,10 +41,18 @@ public class SetCoverInstanceParser {
 						// Define cover relation - most common case
 						Integer vertex = Integer.parseInt(cPatternMatcher.group(1));
 						Integer set = Integer.parseInt(cPatternMatcher.group(2));
-						if (covers.get(vertex) == null)
-							covers.put(vertex, new HashSet<Integer>(set));
+						
+						// Sets covering v
+						if (coveringV.get(vertex) == null)
+							coveringV.put(vertex, new HashSet<Integer>(set));
 						else
-							covers.get(vertex).add(set);
+							coveringV.get(vertex).add(set);
+						
+						// Vertices covered by s
+						if (coveredByS.get(set) == null)
+							coveredByS.put(set, new HashSet<Integer>(vertex));
+						else
+							coveredByS.get(set).add(vertex);
 					} else if (nPatternMatcher.find()) {
 						// Define n
 						n = Integer.parseInt(nPatternMatcher.group(1));
@@ -67,6 +76,6 @@ public class SetCoverInstanceParser {
 	    		throw new IllegalStateException("No m or n specified or wrong number of costs in set cover instance .dat file " + filePath + ". Aborting.");
 	    }
 	    
-		return new SetCoverInstance(n, m, c, covers);
+		return new SetCoverInstance(n, m, c, coveringV, coveredByS);
 	}
 }

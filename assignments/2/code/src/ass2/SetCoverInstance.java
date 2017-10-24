@@ -16,13 +16,17 @@ public class SetCoverInstance {
 	private ArrayList<Integer> costs;
 	
 	// Covers - (vertex, sets covering vertex)
-	private Map<Integer, Set<Integer>> covers;
+	private Map<Integer, Set<Integer>> coveringV;
 	
-	public SetCoverInstance(int n, int m, ArrayList<Integer> costs, Map<Integer, Set<Integer>> covers) {
+	// Covers - (vertex, sets covering vertex)
+	private Map<Integer, Set<Integer>> coveredByS;
+	
+	public SetCoverInstance(int n, int m, ArrayList<Integer> costs, Map<Integer, Set<Integer>> coveringV, Map<Integer, Set<Integer>> coveredByS) {
 		this.n = n;
 		this.m = m;
 		this.costs = costs;
-		this.covers = covers;
+		this.coveringV = coveringV;
+		this.coveredByS = coveredByS;
 	}
 
 	// Get number of sets
@@ -36,8 +40,13 @@ public class SetCoverInstance {
 	}
 	
 	// Get sets that cover vertex v
-	public Set<Integer> getCovers(int v) {
-		return this.covers.get(v);
+	public Set<Integer> getSetsCovering(int v) {
+		return this.coveringV.get(v);
+	}
+	
+	// Get vertices covered by s
+	public Set<Integer> getVerticesCovered(int s) {
+		return this.coveredByS.get(s);
 	}
 	
 	// Get cost of set s
