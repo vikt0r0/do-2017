@@ -4,21 +4,17 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
-
 import ilog.concert.IloException;
 import ilog.opl.IloOplModel;
 
-public class RandomizedRounding extends Roundings{
-
+public class SimpleRounding extends Roundings{
 	IloOplModel opl;
 	String filePath;
 	SetCoverInstance setCoverInstance;
 	public boolean isFeasible;
 	public float objectiveValue;
 	
-	
-	
-	public RandomizedRounding(IloOplModel opl, String filePath)
+	public SimpleRounding(IloOplModel opl, String filePath)
 	{
 		this.opl = opl;
 		this.filePath = filePath;
@@ -26,32 +22,27 @@ public class RandomizedRounding extends Roundings{
 	}
 	
 	
-	public void randomizedRounding() throws IloException {
+	public void simpleRounding(int f) throws IloException {
 		int n = getN(opl);
 		HashMap<Integer, Double> xs = getXs(opl);
 		
 		Set<Integer> setIncluded = new HashSet<Integer>();
-
-		double logN = Math.log(n);
 		float objVal = 0.0f;
 		
+		int logN = (int) Math.log(n);
 		
-		double Const = 0.2;
-		for(int iter = 0; iter < Math.ceil(Const*logN); iter++)
+		double confidence = 1.0 / f;
+		
+		for(int s = 1; s <= n; s++)
 		{
-			double randomNumber = Math.random();
-			
-			for(int s = 1; s <= n; s++)
+			if(xs.get(s) >= confidence)
 			{
-				if(randomNumber <= xs.get(s))
-				{
-					setIncluded.add(s);
-					objVal += setCoverInstance.getCost(s);
-				}
+				setIncluded.add(s);
+				objVal += setCoverInstance.getCost(s);
 			}
 		}
 		
 		this.isFeasible = isFeasible(setIncluded, setCoverInstance);
-		objectiveValue = objVal;
+		objectiveValue = (float) objVal;
 	}
 }

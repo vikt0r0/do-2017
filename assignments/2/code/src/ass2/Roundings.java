@@ -1,13 +1,7 @@
 package ass2;
 
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-
-import com.sun.javafx.collections.MappingChange.Map;
-
 import ilog.concert.IloException;
 import ilog.concert.IloNumMap;
 import ilog.opl.IloOplModel;
@@ -30,7 +24,6 @@ public class Roundings {
 			{
 				return false;
 			}
-			
 		}
 		
 		return true;
@@ -55,9 +48,9 @@ public class Roundings {
 		HashMap<Integer, Double> xs = new HashMap<Integer, Double>();
 		IloNumMap xsMap = opl.getElement("x").asNumMap();
 		
-		for(int c = 1; c <= n; c++)
+		for(int s = 1; s <= n; s++)
 		{
-			xs.put(c, xsMap.get(c));
+			xs.put(s, xsMap.get(s));
 		}
 		
 		return xs;
