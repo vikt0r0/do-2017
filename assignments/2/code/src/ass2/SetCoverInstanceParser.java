@@ -44,15 +44,17 @@ public class SetCoverInstanceParser {
 						
 						// Sets covering v
 						if (coveringV.get(vertex) == null)
-							coveringV.put(vertex, new HashSet<Integer>(set));
-						else
-							coveringV.get(vertex).add(set);
+						{
+							coveringV.put(vertex, new HashSet<Integer>());
+						}
+						coveringV.get(vertex).add(set);
 						
 						// Vertices covered by s
 						if (coveredByS.get(set) == null)
+						{
 							coveredByS.put(set, new HashSet<Integer>(vertex));
-						else
-							coveredByS.get(set).add(vertex);
+						}
+						coveredByS.get(set).add(vertex);
 					} else if (nPatternMatcher.find()) {
 						// Define n
 						n = Integer.parseInt(nPatternMatcher.group(1));

@@ -1,6 +1,7 @@
 package ass2;
 
 import java.io.FileNotFoundException;
+import java.util.Arrays;
 
 import ilog.concert.IloException;
 import ilog.concert.IloNumMap;
@@ -18,7 +19,7 @@ public class ass2op2 {
 		IloOplFactory.setDebugMode(false);
 		IloOplFactory oplF = new IloOplFactory();
 		IloOplErrorHandler errHandler = oplF.createOplErrorHandler(System.out);
-		IloOplModelSource modelSource = oplF.createOplModelSource("ModelSparse1.mod");
+		IloOplModelSource modelSource = oplF.createOplModelSource("ModelSparse1relax.mod");
 		IloCplex cplex = oplF.createCplex();
 		IloOplSettings settings = oplF.createOplSettings(errHandler);
 		IloOplModelDefinition def=oplF.createOplModelDefinition(modelSource,settings);
@@ -28,8 +29,10 @@ public class ass2op2 {
 		runOnFile(opl, oplF, cplex, inDataFile);
 		
 		
-		IloNumMap x = opl.getElement("x").asNumMap();
-		System.out.println(x.get(0));
+		RandomizedRounding randRound = new RandomizedRounding(opl, inDataFile);
+		randRound.randomizedRounding();
+//		System.out.println(opl.getElement("x").asNumMap().get(3));
+		
 	}
 
 	public static void runOnFile(IloOplModel opl, IloOplFactory oplF, IloCplex cplex, String str) throws IloException
@@ -38,8 +41,7 @@ public class ass2op2 {
 		opl.addDataSource(dataSource);
 
 		opl.generate();
-		opl.convertAllIntVars(); // converts integer bounds into LP compatible format
-		
+		//opl.convertAllIntVars(); // converts integer bounds into LP compatible format
 		
 		if (cplex.solve()){
 			System.out.println(cplex.getObjValue());
@@ -49,10 +51,8 @@ public class ass2op2 {
 		}
 	}
 
-	public static void objectiveValueOfFile(String filename)
-	{
-		
-		
-	}
+	
+	
+
 	
 }
