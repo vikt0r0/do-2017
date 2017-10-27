@@ -36,7 +36,7 @@ public class RandomizedRounding extends Roundings{
 		float objVal = 0.0f;
 		
 		
-		double Const = 0.2;
+		double Const = 0.1;
 		for(int iter = 0; iter < Math.ceil(Const*logN); iter++)
 		{
 			double randomNumber = Math.random();

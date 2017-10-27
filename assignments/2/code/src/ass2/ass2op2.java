@@ -25,7 +25,7 @@ public class ass2op2 {
 		IloOplModelDefinition def=oplF.createOplModelDefinition(modelSource,settings);
 		IloOplModel opl=oplF.createOplModel(def,cplex);
 
-		String inDataFile = "data/scpc3.dat";
+		String inDataFile = "data/scpnrg5.dat";
 		
 		runOnFile(opl, oplF, cplex, inDataFile);
 
@@ -57,10 +57,34 @@ public class ass2op2 {
 	}
 	
 	private static void randomizedRound(IloOplModel opl, String filepath) throws IloException{
-		RandomizedRounding randRound = new RandomizedRounding(opl, filepath);
-		randRound.randomizedRounding();
 		
-		System.out.println("Randomized rounding produced a feasible: " + randRound.isFeasible + " with objective value og " + randRound.objectiveValue);
+		int iter = 10;
+		RandomizedRounding randRound;
+		
+		double tot_obj = 0.0;
+		for(int i = 0; i < iter; i++)
+		{
+			int tries = 0;
+			while(true)
+			{
+				tries++;
+				randRound = new RandomizedRounding(opl, filepath);
+				randRound.randomizedRounding();
+				
+				if(randRound.isFeasible)
+				{
+					break;
+				}
+			}
+			
+			tot_obj += randRound.objectiveValue;
+			System.out.println("Randomized rounding produced average objective value of " + randRound.objectiveValue + " after " + tries);
+		}
+		
+		tot_obj = tot_obj/10.0;
+		System.out.println("Randomized rounding produced average objective value of " + tot_obj);
+		
+		
 	}
 
 	public static void runOnFile(IloOplModel opl, IloOplFactory oplF, IloCplex cplex, String str) throws IloException
