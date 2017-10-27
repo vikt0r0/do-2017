@@ -97,7 +97,7 @@ The implemented metaheuristic uses a hill-climbing (valley descent) approach to 
 \item In which one set covering each vertex was picked uniformly at random.
 \item In which all sets were picked initially.
 \end{enumerate}
-1) was made with the idea of adversarial situations in mind, in which input instances might foil the greedy approach used by the algorithm, however approach 2) produced much better results and was chosen instead. Our implementation thus lacks the ability to foil adversaries and 'escape' local minimums, which could be remedied by the introduction of random choices. Enlarging the neighborhood to occasionally include infeasible solutions would also seem worthwhile, however both of these strategies call for more sophisticated heuristics, e.g. simulated annealing. The results of the heuristic can be seen in Table \ref{times} - we were surprised how well the heuristic managed to find good covers.
+1) was made with the idea of adversarial situations in mind, in which input instances might foil the greedy approach used by the algorithm, however approach 2) produced much better results and was chosen instead. Our implementation thus lacks the ability to foil adversaries and 'escape' local minimums, which could be remedied by the introduction of random choices. Enlarging the neighborhood to occasionally include infeasible solutions would also seem worthwhile, however both of these strategies call for more sophisticated heuristics, e.g. simulated annealing. The results of the heuristic can be seen in Table \ref{times} - we were surprised how well the heuristic managed to find good covers despite its simplicity.
 \begin{table}[!hbt]
 \center
 \begin{tabular}{|c | c | c | c | c | c |}
