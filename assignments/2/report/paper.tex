@@ -6,7 +6,7 @@
 
 \usepackage[margin=1in]{geometry}  % set the margins to 1in on all sides
 \usepackage{graphicx}              % to include figures
-\usepackage{amsmath,bm}            % great math stuff
+\usepackage{amsmath,bm, amssymb}            % great math stuff
 \usepackage{amsfonts}              % for blackboard bold, etc
 \usepackage{amsthm}                % better theorem environments
 \usepackage{listings}
@@ -78,12 +78,11 @@ Now, consider a rounded set-cover $C$ produced by the LP program. We wish to bou
 So  $\text{Pr}[\text{cost}(C) \leq c \cdot OPT ] \geq 1-1/c$. Finally by applying union bound we get the following lower bound
 \begin{align*}
 \text{Pr}[X \geq n/2 \; \land \; c \cdot OPT \geq \text{cost}(C)] = & \; 1-\text{Pr}[X < n/2 \; \lor \; c \cdot OPT < \text{cost}(C)] \\
-\geq &\;1 - (1 - 0.014) - (1-1/c) \\
-= & \; 1 - 1 + 0.014 - 1 + 1/c\\
-= & \; c-0.086 \\
+\geq &\;1 - (1 - 0.014) - 1/c \\
+= & \; 0.014-1/c \\
 = & \; \Omega(1)
 \end{align*}
-For the upper bound we have $\text{Pr}[X \geq n/2 \; \land \; c \cdot OPT \geq \text{cost}(C)]  \leq \min \left\{ 0.014, 1/c \right\} = O(1)$ showing that the event occurs with  probability $\Theta(1)$.
+Which is positive for $c \gtrsim 0.014^{-1}$. For the upper bound we have $\text{Pr}[X \geq n/2 \; \land \; c \cdot OPT \geq \text{cost}(C)]  \leq \min \left\{ 0.014, 1/c \right\} = O(1)$ showing that the event occurs with  probability $\Theta(1)$.
 
 \pagebreak
 \section*{Implementation part}
