@@ -97,22 +97,25 @@ The implemented metaheuristic uses a hill-climbing (valley descent) approach to 
 \item In which all sets were picked initially.
 \end{enumerate}
 1) was made with the idea of adversarial situations in mind, in which input instances might foil the greedy approach used by the algorithm, however approach 2) produced much better results and was chosen instead. Our implementation thus lacks the ability to foil adversaries and 'escape' local minima, which could be remedied by the introduction of random choices. Enlarging the neighborhood to occasionally include infeasible solutions would also seem worthwhile, however both of these strategies call for more sophisticated heuristics, e.g. simulated annealing. The results of the heuristic can be seen in Table \ref{times} - we were surprised how well the heuristic managed to find good covers despite its simplicity.
+
 \begin{table}[!hbt]
 \center
-\begin{tabular}{|c | c | c | c | c | c |}
+\begin{tabular}{|c | c | c | c | c | c | c  | c  | c |}
 \hline
-& \multicolumn{1}{|c|}{CPLEX} & \multicolumn{1}{|c|}{Simple Rounding (f/val)} & Randomized Rounding & \multicolumn{1}{|c|}{Descent} \\
+& \multicolumn{2}{|c|}{CPLEX} & \multicolumn{2}{|c|}{Simple Rounding} & \multicolumn{2}{|c|}{Rand. Rounding} & \multicolumn{2}{|c|}{Heuristic}  \\
 \hline
-scpa3 & 232 & (3, 313) & 397.6 & 256 \\
+& Value & Time & ($f$, Value) & Time & Value & Time & Value & Time\\
 \hline
-scpc3 & 243 & (4, 379) & 462.9 & 273 \\
+scpa3 & 232 & & (3, 313) & & 397.6 & & 256 & \\
 \hline
-scpnrf1 & 14 & (7, 25) & 49.3 & 20 \\
+scpc3 & 243 & & (4, 379) & & 462.9 & & 273 & \\
 \hline
-scpnrg5 & N/A & (5, 321) & 391.7 & 196 \\
+scpnrf1 & 14 & & (7, 25) & & 49.3 & & 20 & \\
+\hline
+scpnrg5 & N/A & & (5, 321) & & 391.7 & & 196 & \\
 \hline 
 \end{tabular}
-\caption{Reported costs for the set covers found by our implementions. Simple rounding is written with lowest integer $f$ with a feasible solution and the objective value next to it at that $f$. The randomized rounding results are the mean of 10 feasible solutions' objective values.
+\caption{Reported costs and running time for the set cover implementations. The $f$ in the simple rounding column denotes the choice of $f$ resulting in the feasible solution. The randomized rounding results denote the means of objective values for 10 feasible solutions' objective values.
 \label{times}}
 \end{table}
 
