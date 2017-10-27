@@ -89,6 +89,25 @@ for $c = 1$, showing that the event occurs with constant probability.
 \subsection*{2.2 Rounding}
 
 \subsection*{2.3 Third Method}
-The implemented method uses a hill-climbing (valley descent) approach to determine a local minimum. The approach initialises a valid set cover and greedily removes the most costly sets while maintaining feasibility. Two approaches to producing initial feasible solutions were tested: 1) in which a random a random set was picked for each vertex, uniformly at random and 2) in which all sets were picked initially. 1) was made with the idea of adversarial situations in which input instances might foil the greedy approach used by the algorithm, however approach 2) produced much better results. To foil an adversary and 'escaping' local minimums, an approach like simulated annealing, introducing random choices as to enlarging the neighborhood to occasionally include infeasible solutions seems like a good initial approach.
+The implemented metaheuristic uses a hill-climbing (valley descent) approach to determine a local minimum. The approach initialises a valid set cover and greedily removes the most costly set while maintaining feasibility until no more sets can be removed. Two approaches of producing initial feasible solutions were tested: 1) in which a set was picked uniformly at random for each vertex and 2) in which all sets were picked initially. 1) was made with the idea of adversarial situations in mind, in which input instances might foil the greedy approach used by the algorithm, however approach 2) produced much better results and was chosen instead. Our implementation thus lacks the ability to foil adversaries and 'escape' local minimums, which could be remedied by the introduction of random choices. Enlarging the neighborhood to occasionally include infeasible solutions would also seem worthwhile, however both of these strategies call for more sophisticated heuristics, e.g. simulated annealing. The results of the heuristic can be seen in Table \ref{times} - we were surprised how well the heuristic managed to find good covers.
+
+\begin{table}[!hbt]
+\center
+\begin{tabular}{|c | c | c | c | c | c |}
+\hline
+& \multicolumn{1}{|c|}{CPLEX} & \multicolumn{1}{|c|}{Rounding} & \multicolumn{1}{|c|}{Descent} \\
+\hline
+scpa3 & ? & ? & 256 \\
+\hline
+scpc3 & ? & ? & 273 \\
+\hline
+scpnrf1 & ? & ? & 20 \\
+\hline
+scpnrg5 & ? & ? & 196 \\
+\hline 
+\end{tabular}
+\caption{Reported costs for the set covers found by our implementions.
+\label{times}}
+\end{table}
 
 \end{document}
