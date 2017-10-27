@@ -67,9 +67,9 @@
 \pagebreak
 
 \section*{Theoretical part}
-Let $X_a = 1$ if $a$ is covered by $C$ and $X=0$ otherwise and let $X=\sum_{a \in V}$ denote the total number of elements covered by $C$. We wish to bound the probability $Pr\left[ X \geq n/2 \right]$ using Chernoff Bound, since the bound yielded by Markov's inequality on this expression is too weak to say anything meaningful. $X$ is a sum of Bernoulli trials with parameters $p_a  \geq p =  1-\frac{1}{e}$. Using this bound for $p_a$ we can apply applying Chernoff bound for sum of Bernoulli variables \footnote{\url{https://en.wikipedia.org/wiki/Chernoff_bound\#Example}} and get:
+Let $X_a = 1$ if $a$ is covered by $C$ and $X_a=0$ otherwise and let $X=\sum_{a \in V} X_a$ denote the total number of elements covered by $C$. We wish to bound the probability $Pr\left[ X \geq n/2 \right]$ using Chernoff Bound, since the bound yielded by Markov's inequality on this expression is too weak to say anything meaningful. $X$ is a sum of Bernoulli trials with parameters $p_a  \geq p \geq  1-\frac{1}{e}$. Using this bound for $p_a$ we can apply applying Chernoff bound for sum of Bernoulli variables \footnote{\url{https://en.wikipedia.org/wiki/Chernoff_bound\#Example}} and get:
 \begin{align*}
-\text{Pr}[X \geq n/2] \geq 1 - e^{-\frac{n}{2p}\left( p-\frac{1}{2} \right)^2} = 1 - e^{-\frac{n}{2-\frac{2}{e}}\left( 1-\frac{1}{e}-\frac{1}{2} \right)^2} \geq 1 - e^{-\frac{1}{2-\frac{2}{e}}\left( 1-\frac{1}{e}-\frac{1}{2} \right)^2} \approx 0.014
+\text{Pr}[X \geq n/2] \geq 1 - e^{-\frac{n}{2p}\left( p-\frac{1}{2} \right)^2} \geq 1 - e^{-\frac{n}{2-\frac{2}{e}}\left( 1-\frac{1}{e}-\frac{1}{2} \right)^2} \geq 1 - e^{-\frac{1}{2-\frac{2}{e}}\left( 1-\frac{1}{e}-\frac{1}{2} \right)^2} \approx 0.014
 \end{align*}
 Now, consider a rounded set-cover $C$ produced by the LP program. We wish to bound $\text{Pr}[\text{cost}(C) \leq c \cdot OPT ] = 1 - \text{Pr}[\text{cost}(C) > c \cdot OPT ] $. From Markov's inequality we get
 \begin{align*}
@@ -96,15 +96,15 @@ The implemented metaheuristic uses a hill-climbing (valley descent) approach to 
 \center
 \begin{tabular}{|c | c | c | c | c | c |}
 \hline
-& \multicolumn{1}{|c|}{CPLEX} & \multicolumn{1}{|c|}{Rounding} & \multicolumn{1}{|c|}{Descent} \\
+& \multicolumn{1}{|c|}{CPLEX} & \multicolumn{1}{|c|}{Simple Rounding} & Randomized Rounding & \multicolumn{1}{|c|}{Descent} \\
 \hline
-scpa3 & ? & ? & 256 \\
+scpa3 & 232 & ? & & 256 \\
 \hline
-scpc3 & ? & ? & 273 \\
+scpc3 & 243 & ? & & 273 \\
 \hline
-scpnrf1 & ? & ? & 20 \\
+scpnrf1 & 14 & ? & & 20 \\
 \hline
-scpnrg5 & ? & ? & 196 \\
+scpnrg5 & N/A & ? & & 196 \\
 \hline 
 \end{tabular}
 \caption{Reported costs for the set covers found by our implementions.
