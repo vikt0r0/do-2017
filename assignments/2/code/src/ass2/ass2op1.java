@@ -19,8 +19,6 @@ public class ass2op1 {
 		double file1Obj =  objectiveValueOfFile("data/" + file1);
 		double file2Obj =  objectiveValueOfFile("data/" + file2);
 		double file3Obj =  objectiveValueOfFile("data/" + file3);
-		
-		
 
 		System.out.println("File " + file1 + " has objective value " + file1Obj);
 		System.out.println("File " + file2 + " has objective value " + file2Obj);
