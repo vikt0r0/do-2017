@@ -51,7 +51,7 @@ public class SetCoverInstance {
 	
 	// Get cost of set s
 	public Integer getCost(int s) {
-		return this.costs.get(s);
+		return this.costs.get(s-1);
 	}
 	
 }
