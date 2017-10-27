@@ -1,4 +1,4 @@
-package ass2;
+package src.ass2;
 
 import java.util.ArrayList;
 import java.util.Map;

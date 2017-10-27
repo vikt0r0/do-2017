@@ -1,4 +1,4 @@
-package ass2;
+package src.ass2;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -11,8 +11,9 @@ import java.util.stream.Collectors;
 public class ass2op3 {
 
 	public static void main(String[] args) {
-		SetCoverInstance sc = SetCoverInstanceParser.parseInstance("data/scpnrg5.dat");
+		SetCoverInstance sc = SetCoverInstanceParser.parseInstance("data/scpa3.dat");
 		
+		double start = System.currentTimeMillis();
 		// Random initialization pass - produce initial cover
 		Random rand = new Random();
 		Set<Integer> cover = new HashSet<Integer>();
@@ -68,7 +69,12 @@ public class ass2op3 {
 			cost += sc.getCost(s);
 		}
 		
-		System.out.println("Set cover of cost: " + cost);
+		double end = System.currentTimeMillis();
+		
+		end -= start;
+		
+		
+		System.out.println("Set cover of cost: " + cost + " using time = " + end);
 	}
 	
 }

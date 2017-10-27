@@ -1,4 +1,4 @@
-package ass2;
+package src.ass2;
 
 import java.io.IOException;
 import java.nio.file.Files;

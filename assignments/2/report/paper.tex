@@ -86,9 +86,25 @@ Which is positive for $c \gtrsim 0.014^{-1}$. For the upper bound we have $\text
 
 \pagebreak
 \section*{Implementation part}
+
+All the experiments were run on a Lenovo Y500, i7 2.4 GHZ Quad core processor, with 8 GB ram and a GeForce GT 650M. All times were computed with Java built-in System.currentTimeMillis().
+
 \subsection*{2.1 CPLEX}
 
+We used the {\tt ModelSparse1.mod} file provided for the implementation. It provides an OPL-model for CPLEX to solve the ILP for set cover with costs for each set. The results of the ILP using CPLEX are found in {\tt ass2op1.java}, where we used the ilog.opl library in java to interpret the model. Then, cplex is run with the model, to finally get the objective values found in Table \ref{times}.\\
+
+After 20 minutes of running on the file instance {\tt scpnrg5} without results, we gave up on retrieving them. Therefore, it is marked as N/A. All other instances were solved, with timing beginning when cplex was set to solve and ended immediately thereafter.
 \subsection*{2.2 Rounding}
+
+The ILP relaxation of the model used in 2.1 was created with {\tt ModelSparse1relax.mod}, where the only change applied was to set the decision variables to float+. Since the relaxation will never have $x_s>1$, as all costs are positive, this corresponds to relaxing so that $x_s \in \left[ 0, 1\right]$. All results of the relaxations are found in {\tt ass2op2.java}, where the approaches to each rounding was as follows:\\
+
+{\bf Simple Rounding:} To minimize $f$, we started with $f=1$, and saw whether the rounding gave a feasible solution. If not, we increment $f$ by 1, and repeat until we get a feasible solution. This guarantees that $f$ was the optimal integer value. The algorithm could have been improved by finding the optimal double value instead, which will give better solutions, but it seemed against the idea of simple rounding to do so.\\
+
+{\bf Randomized Rounding:} We set $c=0.1$, so that the we get a union of $0.1\log(n)$ randomly generated sets. This parameter was used, as it proved to require few repeats, and still giving low objective values. The algorithm was repeated until a feasible solution was found.
+
+The results of the these algorithms can be seen in Table \ref{times}, where the simple rounding both has a minimum $f$ for feasibility and its objective values. All times were measured from the beginning of rounding until a feasible solution was found. The time it took to solve the LP relaxation is not included to give a better comparison between the two rounding algorithms running time.\\
+
+From Table \ref{times}, we may note that the random rounding algorithm (RR) in almost all cases has a better minimal objective value than that of simple rounding. This is because we allowed it to run 10 times, and it will therefore at some point reach a better solution than the simple rounding. Looking at averages, we see that simple rounding provides an on average better solution than RR, but at the cost of some computation time. In some instances, the randomized rounding finds a feasible solution 5 times faster than simple rounding (on average), in which case one might find a good objective value by repeating the RR algorithm a few number of times without the cost being higher than Simple Rounding.  
 
 \subsection*{2.3 Third Method}
 The implemented metaheuristic uses a hill-climbing (valley descent) approach to determine a local minimum. The approach initialises a valid set cover and greedily removes the most costly set while maintaining feasibility until no more sets can be removed. Two approaches of producing initial feasible solutions were tested:
@@ -96,7 +112,7 @@ The implemented metaheuristic uses a hill-climbing (valley descent) approach to 
 \item In which one set covering each vertex was picked uniformly at random.
 \item In which all sets were picked initially.
 \end{enumerate}
-1) was made with the idea of adversarial situations in mind, in which input instances might foil the greedy approach used by the algorithm, however approach 2) produced much better results and was chosen instead. Our implementation thus lacks the ability to foil adversaries and 'escape' local minima, which could be remedied by the introduction of random choices. Enlarging the neighborhood to occasionally include infeasible solutions would also seem worthwhile, however both of these strategies call for more sophisticated heuristics, e.g. simulated annealing. The results of the heuristic can be seen in Table \ref{times} - we were surprised how well the heuristic managed to find good covers despite its simplicity.
+1) was made with the idea of adversarial situations in mind, in which input instances might foil the greedy approach used by the algorithm, however approach 2) produced much better results and was chosen instead. Our implementation thus lacks the ability to foil adversaries and 'escape' local minima, which could be remedied by the introduction of random choices. Enlarging the neighborhood to occasionally include infeasible solutions would also seem worthwhile, however both of these strategies call for more sophisticated heuristics, e.g. simulated annealing. The results of the heuristic can be seen in Table \ref{times} - we were surprised how well the heuristic managed to find good covers despite its simplicity. In fact, it completely dominated both rounding methods both in terms of time and objective values, and would seem to be a better option to bound the optimal value than either of the roundings.  
 
 \begin{table}[!hbt]
 \center
@@ -104,18 +120,18 @@ The implemented metaheuristic uses a hill-climbing (valley descent) approach to 
 \hline
 & \multicolumn{2}{|c|}{CPLEX} & \multicolumn{2}{|c|}{Simple Rounding} & \multicolumn{2}{|c|}{Rand. Rounding} & \multicolumn{2}{|c|}{Heuristic}  \\
 \hline
-& Value & Time & ($f$, Value) & Time & Value & Time & Value & Time\\
+& Value & Time & ($f$, Value) & Time & (avg/min) value & avg time & Value & Time\\
 \hline
-scpa3 & 232 & & (3, 313) & & 397.6 & & 256 & \\
+scpa3 & 232 & 484 & (3, 313) & 275 & (397.6/353) & 49 & 256 & 50\\
 \hline
-scpc3 & 243 & & (4, 379) & & 462.9 & & 273 & \\
+scpc3 & 243 & 1399& (4, 379) & 414 & (462.9/363) & 101.1 & 273 & 66\\
 \hline
-scpnrf1 & 14 & & (7, 25) & & 49.3 & & 20 & \\
+scpnrf1 & 14 & 19271& (7, 25) & 4219 & (49.3/24) & 3179 & 20 & 176\\
 \hline
-scpnrg5 & N/A & & (5, 321) & & 391.7 & & 196 & \\
+scpnrg5 & N/A & N/A & (5, 321) & 1320 & (391.7/300) & 482 & 196 & 97\\
 \hline 
 \end{tabular}
-\caption{Reported costs and running time for the set cover implementations. The $f$ in the simple rounding column denotes the choice of $f$ resulting in the feasible solution. The randomized rounding results denote the means of objective values for 10 feasible solutions' objective values.
+\caption{Reported costs and running time ($ms$) for the set cover implementations. The $f$ in the simple rounding column denotes the choice of $f$ resulting in the feasible solution. The randomized rounding results denote the means over 10 independent runs of the algorithm with $C=0.1$.
 \label{times}}
 \end{table}
 

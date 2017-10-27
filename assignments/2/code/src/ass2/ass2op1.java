@@ -1,4 +1,4 @@
-package ass2;
+package src.ass2;
 
 import ilog.cplex.*;
 import ilog.opl.*;
@@ -16,13 +16,19 @@ public class ass2op1 {
 		String file3 = "scpnrf1.dat";
 		String file4 = "scpnrg5.dat";
 		
+		double start = System.currentTimeMillis();
 		double file1Obj =  objectiveValueOfFile("data/" + file1);
+		double end1 = System.currentTimeMillis() - start;
+		start = System.currentTimeMillis();
 		double file2Obj =  objectiveValueOfFile("data/" + file2);
+		double end2 = System.currentTimeMillis() - start;
+		start = System.currentTimeMillis();
 		double file3Obj =  objectiveValueOfFile("data/" + file3);
-
-		System.out.println("File " + file1 + " has objective value " + file1Obj);
-		System.out.println("File " + file2 + " has objective value " + file2Obj);
-		System.out.println("File " + file3 + " has objective value " + file3Obj);
+		double end3 = System.currentTimeMillis() - start;
+		
+		System.out.println("File " + file1 + " has objective value " + file1Obj + " in time = " + end1);
+		System.out.println("File " + file2 + " has objective value " + file2Obj + " in time " + end2);
+		System.out.println("File " + file3 + " has objective value " + file3Obj + " in time " + end3);
 	}
 
 	public static double runOnFile(IloOplModel opl, IloOplFactory oplF, IloCplex cplex, String str) throws IloException

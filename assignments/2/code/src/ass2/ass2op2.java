@@ -1,4 +1,4 @@
-package ass2;
+package src.ass2;
 
 import java.io.FileNotFoundException;
 import java.util.Arrays;
@@ -25,12 +25,12 @@ public class ass2op2 {
 		IloOplModelDefinition def=oplF.createOplModelDefinition(modelSource,settings);
 		IloOplModel opl=oplF.createOplModel(def,cplex);
 
-		String inDataFile = "data/scpnrg5.dat";
+		String inDataFile = "data/scpa3.dat";
 		
 		runOnFile(opl, oplF, cplex, inDataFile);
 
 		System.out.println("File = " + inDataFile);
-		simpleRoundingRun(opl, inDataFile);
+		//simpleRoundingRun(opl, inDataFile);
 		
 		randomizedRound(opl, inDataFile);
 		
@@ -39,6 +39,7 @@ public class ass2op2 {
 	private static void simpleRoundingRun(IloOplModel opl, String filepath) throws IloException {
 		
 		int f = 0;
+		double start = System.currentTimeMillis();
 		
 		while(true)
 		{
@@ -47,9 +48,14 @@ public class ass2op2 {
 			f = f + 1;
 			simpRound.simpleRounding(f);
 			
-			System.out.println("The simple rounding with f = " + f + " produced a feasible :" + simpRound.isFeasible + " with a cost of " + simpRound.objectiveValue);
+			
+			//System.out.println("The simple rounding with f = " + f + " produced a feasible :" + simpRound.isFeasible + " with a cost of " + simpRound.objectiveValue );
 			if(simpRound.isFeasible == true)
 			{
+				double end = System.currentTimeMillis();
+				end = end - start;
+			
+				System.out.println("SIMP Time to find feasible sol = " + end);
 				return;
 			}
 		}
@@ -61,10 +67,12 @@ public class ass2op2 {
 		int iter = 10;
 		RandomizedRounding randRound;
 		
+		double total_time = 0.0;
 		double tot_obj = 0.0;
 		for(int i = 0; i < iter; i++)
 		{
 			int tries = 0;
+			double start = System.currentTimeMillis();
 			while(true)
 			{
 				tries++;
@@ -73,16 +81,23 @@ public class ass2op2 {
 				
 				if(randRound.isFeasible)
 				{
+					double end = System.currentTimeMillis();
+					
+					end = end - start;
+					
+					total_time += end;
+					//System.out.println("Time to find feasible solution = " + end);
 					break;
 				}
 			}
 			
 			tot_obj += randRound.objectiveValue;
-			System.out.println("Randomized rounding produced average objective value of " + randRound.objectiveValue + " after " + tries);
+			System.out.println("Randomized rounding produced value of " + randRound.objectiveValue + " after " + tries);
 		}
 		
+		total_time = total_time /10.0;
 		tot_obj = tot_obj/10.0;
-		System.out.println("Randomized rounding produced average objective value of " + tot_obj);
+		System.out.println("Randomized rounding produced average objective value of " + tot_obj + " with average time " + total_time);
 		
 		
 	}
