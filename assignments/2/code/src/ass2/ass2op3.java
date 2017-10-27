@@ -11,18 +11,20 @@ import java.util.stream.Collectors;
 public class ass2op3 {
 
 	public static void main(String[] args) {
-		SetCoverInstance sc = SetCoverInstanceParser.parseInstance("data/scpa3.dat");
+		SetCoverInstance sc = SetCoverInstanceParser.parseInstance("data/scpnrg5.dat");
 		
 		// Random initialization pass - produce initial cover
 		Random rand = new Random();
 		Set<Integer> cover = new HashSet<Integer>();
 		
+		/* Random Strategy - bad
 		for (int v = 1; v <= sc.getM(); ++v) {
 			// Add random set covering v to cover
 			Set<Integer> sets = sc.getSetsCovering(v);
 			Integer s = sets.toArray(new Integer[sets.size()])[rand.nextInt(sets.size())];
 			cover.add(s);
 		}
+		*/
 		
 		for (int s = 1; s <= sc.getN(); ++s) {
 			cover.add(s);
