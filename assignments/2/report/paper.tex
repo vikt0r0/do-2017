@@ -67,15 +67,15 @@
 \pagebreak
 
 \section*{Theoretical part}
-Let $X_a = 1$ if $a$ is covered by $C$ and $X=0$ otherwise and let $X=\sum_{a \in V}$ denote the total number of elements covered by $C$. We wish to bound the probability $Pr\left[ X \geq n/2 \right]$ using Chernoff Bound, since the bound yielded by Markov's inequality on this expression is too weak to say anything meaningful. $X$ is a sum of Bernoulli trials with parameters $p_a  \geq p =  1-\frac{1}{e}$. Using this bound for $p_a$ we can apply applying Chernoff bound for sum of Bernoulli variables \footnote{\url{https://en.wikipedia.org/wiki/Chernoff_bound\#Example}} we get:
+Let $X_a = 1$ if $a$ is covered by $C$ and $X=0$ otherwise and let $X=\sum_{a \in V}$ denote the total number of elements covered by $C$. We wish to bound the probability $Pr\left[ X \geq n/2 \right]$ using Chernoff Bound, since the bound yielded by Markov's inequality on this expression is too weak to say anything meaningful. $X$ is a sum of Bernoulli trials with parameters $p_a  \geq p =  1-\frac{1}{e}$. Using this bound for $p_a$ we can apply applying Chernoff bound for sum of Bernoulli variables \footnote{\url{https://en.wikipedia.org/wiki/Chernoff_bound\#Example}} and get:
 \begin{align*}
 \text{Pr}[X \geq n/2] \geq 1 - e^{-\frac{n}{2p}\left( p-\frac{1}{2} \right)^2} = 1 - e^{-\frac{n}{2-\frac{2}{e}}\left( 1-\frac{1}{e}-\frac{1}{2} \right)^2} \geq 1 - e^{-\frac{1}{2-\frac{2}{e}}\left( 1-\frac{1}{e}-\frac{1}{2} \right)^2} \approx 0.014
 \end{align*}
-Now, consider a rounded set-cover $C$ produced by the LP program. We wish to bound $\text{Pr}[\text{cost}(C) \leq c \cdot OPT ] = 1 - \text{Pr}[\text{cost}(C) > c \cdot OPT ] $. By Markov's inequality we get
+Now, consider a rounded set-cover $C$ produced by the LP program. We wish to bound $\text{Pr}[\text{cost}(C) \leq c \cdot OPT ] = 1 - \text{Pr}[\text{cost}(C) > c \cdot OPT ] $. From Markov's inequality we get
 \begin{align*}
 \text{Pr}[\text{cost}(C) > c \cdot OPT ] \leq \text{Pr}[\text{cost}(C) \geq  c \cdot OPT_f ] = \text{Pr}[\text{cost}(C) \geq  c \cdot \text{E}[\text{cost}(C)] ] \leq 1/c
 \end{align*}
-So  $\text{Pr}[\text{cost}(C) \leq c \cdot OPT ] \geq 1-1/c$. By union bound we get
+So  $\text{Pr}[\text{cost}(C) \leq c \cdot OPT ] \geq 1-1/c$. Finally by applying union bound we get
 \begin{align*}
 \text{Pr}[X \geq n/2 \; \land \; c \cdot OPT \geq \text{cost}(C)] = & \; \text{Pr}[X < n/2 \; \lor \; c \cdot OPT < \text{cost}(C)] \\
 \leq &\;1 - 0.014 + 1 - 1/c = 2 - 0.014-1/c\\
